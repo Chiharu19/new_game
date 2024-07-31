@@ -1,31 +1,28 @@
-import { updateLifeDisplay } from "./game_control.js";
+import { updateLifeDisplay, getShadowColor } from "./game_control.js";
 import { endGameLoop } from "../code.js";
-
 
 // makes coins appear at random boxes
 export function randomPopUp(coinCount, colors, boxes, stats, lifeContainer){
   for(let x = 0; x < coinCount; x++){
-    console.log(`coin pop up TRYING`);
     let notGood = true;
     do {
       const box = boxes[Math.floor(Math.random() * 6)];
       const coin = box.querySelector('#coin');
       const displayProperty = window.getComputedStyle(coin).display;
-      console.log(displayProperty);
       
-      if(displayProperty != 'block'){
-        coin.style.backgroundColor = colors[Math.floor(Math.random() * 6 + 1)];
-        coin.style.display = `block`;
+      if(displayProperty != 'flex'){
+        coin.style.boxShadow = `inset 0px 0px 25px 5px ${trapOrNot(colors, stats.level)}`;
+        coin.style.display = `flex`;
 
-        console.log(`declaring success`);
         setTimeout(() => {
-          if(!(coin.style.backgroundColor === 'red') && coin.style.display === 'block' && false) stats.playerLife -= 1;
+          const boxShadowColor = getShadowColor(coin);
+
+          if(!(boxShadowColor === 'red') && coin.style.display === 'flex' && false) stats.playerLife -= 1;
           updateLifeDisplay(lifeContainer, stats);
 
           coin.style.display = `none`;
 
           if(stats.playerLife <= 0){ // end gameloop if life === 0
-            console.log(`ending game loop`);
             endGameLoop();
           }
         }, stats.gamespeed-50);
@@ -34,5 +31,12 @@ export function randomPopUp(coinCount, colors, boxes, stats, lifeContainer){
         
       }
     } while (notGood);
+  }
+}
+
+function trapOrNot(colors, level){
+  if(Math.floor(Math.random() * 2)) return 'red';
+  else {
+    return colors[level];
   }
 }

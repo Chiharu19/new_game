@@ -30,17 +30,56 @@ export function updateTime(stats, timeBoard, time){
 }
 
 // adjusts game elements according to window size
-export function adjustElementsSizes(element){
-  const allBoxes = element;
-  const boxWidth = (window.innerWidth)*0.15;
+export function adjustElementsSizes(parentElement){
+  const hearts = document.querySelectorAll(`#hearts`);
+  const time = document.querySelector('#time');
+  const p = document.querySelectorAll('p');
+  const windowWidth = window.innerWidth;
+  const parent = parentElement;
+  
+  let heartSize;
+  let timeSize;
+  
+  if(windowWidth <= 480){
+    parent.style.width = `${windowWidth*0.8}px`;
+    parent.style.height = `${windowWidth*0.5}px`;
+    heartSize = `${windowWidth*0.12}px`;
+    timeSize = `${windowWidth*0.12}px`;
+  } else if(windowWidth <= 768){
+    parent.style.width = `${windowWidth*0.6}px`;
+    parent.style.height = `${windowWidth*0.4}px`;
+    heartSize = `${windowWidth*0.08}px`;
+    timeSize = `${windowWidth*0.08}px`;
+  } else if(windowWidth <= 1024){
+    parent.style.width = `${windowWidth*0.5}px`;
+    parent.style.height = `${windowWidth*0.3}px`;
+    heartSize = `${windowWidth*0.05}px`;
+    timeSize = `${windowWidth*0.05}px`;
+  } else{
+    parent.style.width = `${windowWidth*0.5}px`;
+    parent.style.height = `${windowWidth*0.3}px`;
+    heartSize = `${windowWidth*0.05}px`;
+    timeSize = `${windowWidth*0.05}px`;
+  }
 
+  // setting hearts size
+  for(let heart of hearts){
+    heart.style.height = heartSize;
+    heart.style.width = heartSize;
+  }
+  // setting timer size
+  time.style.fontSize = timeSize;
+
+  // setting boxes size based on parent container
+  const allBoxes = parentElement.children;
+  const boxWidth = (parent.style.width)*0.155;
   for(let box of allBoxes){
     const coin = box.querySelector('#coin').style;
     box.style.display = 'block';
     box.style.width = `${boxWidth}px`;
     box.style.height = `${boxWidth}px`;
-    coin.width = `50%`;
-    coin.height = `50%`;
+    coin.width = `100%`;
+    coin.height = `100%`;
   }
 }
 
@@ -55,8 +94,10 @@ export function updateLifeDisplay(lifeContainer, stats){
   const hearts = lifeContainer.children;
 
   for(let x = 0; x < 3; x++){
-    if(tempLife > 0) hearts[x].style.backgroundColor = `red`;
-    else hearts[x].style.backgroundColor = `black`;
+    if(tempLife > 0) {
+      hearts[x].style.backgroundImage = `url('./pictures/alive.png')`;
+    }
+    else hearts[x].style.backgroundImage = `url('./pictures/dead.png')`;
     tempLife -= 1;
   }
 }
@@ -69,4 +110,19 @@ export function updateGameSpeed(stats, minGamespeed){
   else if(stats.level < 4) stats.gamespeed = 1000;
   else if(stats.level < 5) stats.gamespeed = 800;
   else stats.gamespeed = 600;
+}
+
+export function getShadowColor(object) {
+  const namedColors = {
+    '0,128,0': 'green',
+    '0,0,255': 'blue',
+    '255,255,0': 'yellow',
+    '255,165,0': 'orange',
+    '255,192,203': 'pink',
+    '128,0,128': 'purple',
+  };
+
+  const coin = window.getComputedStyle(object).getPropertyValue('box-shadow').match(/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+(?:\s*,\s*\d+(?:\.\d+)?)?\s*\)/i)[0]
+  const rgbValues = coin.match(/\d+/g).slice(0, 3).join(',');
+  return namedColors[rgbValues] || 'red';
 }

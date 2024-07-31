@@ -2,7 +2,6 @@ import * as coin from './classes/coin.js';
 import * as gameControl from './classes/game_control.js';
 import * as animations from './classes/animation.js';
 
-
 // container and boxes
 const mainContainer = document.getElementById(`container`);
 const boxes = mainContainer.children;
@@ -15,7 +14,7 @@ const colors = {
   2:`blue`,
   3:`yellow`,
   4:`orange`,
-  5:`red`,
+  5:`pink`,
   6:`purple`
 }
 
@@ -57,17 +56,17 @@ document.addEventListener('keydown', startGameLoop);
 function keyboardInputs(event){
   if(keys.includes(event.key.toLowerCase())){
     const coinInBox = BoxtoKeyMaps[event.key.toLowerCase()].querySelector('#coin');
+    const coinDisplayProperty = window.getComputedStyle(coinInBox).getPropertyValue('display');
 
-    if(coinInBox.style.display === 'none') stats.playerLife -= 1;
+    if(coinDisplayProperty === 'none') stats.playerLife -= 1;
     else {
       coinInBox.style.display = 'none';
-      gameControl.updateScoreBoard(stats, coinInBox.style.backgroundColor); // update score board
+      gameControl.updateScoreBoard(stats, gameControl.getShadowColor(coinInBox)); // update score board
     }
 
     gameControl.updateLifeDisplay(lifeContainer, stats); // update life display
 
     if(stats.playerLife <= 0){ // end gameloop if life === 0
-      console.log(`ending game loop`);
       endGameLoop();
     }
   } else console.log('invalid key');
@@ -83,14 +82,14 @@ function gameloop(event){
     console.log('game started');
 
     // remove gameloop starter
-    document.removeEventListener('keydown', gameloop);
+    document.removeEventListener('keydown', startGameLoop);
 
     document.addEventListener('keydown', keyboardInputs);
 
     // checks for window resizes
-    gameControl.adjustElementsSizes(boxes);
+    gameControl.adjustElementsSizes(mainContainer);
     window.addEventListener(`resize`, () => {
-      gameControl.adjustElementsSizes(boxes);
+      gameControl.adjustElementsSizes(mainContainer);
     });
 
     gameControl.updateLifeDisplay(lifeContainer, stats); // initial life display
@@ -100,15 +99,14 @@ function gameloop(event){
       const clickHandler = () => {
         const coin = box.querySelector('#coin');
 
-        if(coin.style.display === 'block'){
+        if(coin.style.display === 'flex'){
           coin.style.display = 'none';
-          gameControl.updateScoreBoard(stats, coin.style.backgroundColor); // update score board
+          gameControl.updateScoreBoard(stats, gameControl.getShadowColor(coin)); // update score board
         } else stats.playerLife -= 1;
         
         gameControl.updateLifeDisplay(lifeContainer, stats); // update life display
 
         if(stats.playerLife <= 0){
-          console.log(`ending game loop`);
           endGameLoop(); 
         }
       };
@@ -141,6 +139,7 @@ function gameloop(event){
 
 // ending game loop
 export function endGameLoop(){
+  console.log('ending game');
   clearInterval(intervalID1);
   clearInterval(intervalID2);
 
