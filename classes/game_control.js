@@ -1,3 +1,5 @@
+import { failClickAnimation } from "./animation.js";
+
 const newLevel = (minutes, seconds) => {
   let level;
 
@@ -25,15 +27,12 @@ export function updateTime(stats, timeBoard, time){
   timeBoard.innerHTML = `${time.minutes}:${formatTime(time.seconds)}`;
 
   stats.level = newLevel(time.minutes, time.seconds);
-
-  console.log(`level: ${stats.level}`);
 }
 
 // adjusts game elements according to window size
 export function adjustElementsSizes(parentElement){
   const hearts = document.querySelectorAll(`#hearts`);
   const time = document.querySelector('#time');
-  const p = document.querySelectorAll('p');
   const windowWidth = window.innerWidth;
   const parent = parentElement;
   
@@ -72,7 +71,7 @@ export function adjustElementsSizes(parentElement){
 
   // setting boxes size based on parent container
   const allBoxes = parentElement.children;
-  const boxWidth = (parent.style.width)*0.155;
+  const boxWidth = (parent.style.width)*0.1;
   for(let box of allBoxes){
     const coin = box.querySelector('#coin').style;
     box.style.display = 'block';
@@ -85,7 +84,10 @@ export function adjustElementsSizes(parentElement){
 
 // update scoreboard per coin click
 export function updateScoreBoard(stats, coinColor){
-  if(coinColor == 'red') stats.playerLife -= 1;
+  if(coinColor == 'red'){
+    stats.playerLife -= 1;
+    failClickAnimation();
+  }
 }
 
 // update player's life
@@ -114,12 +116,12 @@ export function updateGameSpeed(stats, minGamespeed){
 
 export function getShadowColor(object) {
   const namedColors = {
-    '0,128,0': 'green',
-    '0,0,255': 'blue',
-    '255,255,0': 'yellow',
-    '255,165,0': 'orange',
-    '255,192,203': 'pink',
-    '128,0,128': 'purple',
+    '24,219,27': 'green',
+    '12,73,242': 'blue',
+    '242,211,12': 'yellow',
+    '242,89,12': 'orange',
+    '67,8,168': 'purple',
+    '0,151,167': 'teal',
   };
 
   const coin = window.getComputedStyle(object).getPropertyValue('box-shadow').match(/rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+(?:\s*,\s*\d+(?:\.\d+)?)?\s*\)/i)[0]

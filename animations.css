@@ -1,0 +1,57 @@
+#background{
+  height: 250%;
+  width: 200%;
+  position: absolute;
+  z-index: -5;
+  transform: rotate(-45deg);
+  border-top: 5px;
+}
+
+.faller{
+  position: absolute;
+  top: 0px;
+  left: 10%;
+  border: 3px solid rgb(24, 219, 27);
+  translate: -50% -50%;
+  opacity: 1;
+  transition: all 0.5s;
+}
+
+.whiteout{
+  position: absolute;
+  z-index: 10;
+  opacity: 0;
+  background-color: white;
+  height: 100%;
+  width: 100%;
+  transition: all 1s;
+  pointer-events: none;
+}
+
+.failClickShadow{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  box-shadow: inset 0px 0px 100px 10px rgba(255, 0, 0, 0.600);
+  opacity: 0;
+  transition: all 0.25s;
+  pointer-events: none;
+  background: none;
+}
+
+@keyframes meteor-fall{
+  0%{
+    top: 0%;
+    transform: rotate(0deg);
+  }
+  50%{
+    top: 50%;
+    transform: rotate(360deg);
+
+  }
+  100%{
+    top: 100%;
+    transform: rotate(720deg);
+
+  }
+}

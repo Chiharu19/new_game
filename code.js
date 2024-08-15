@@ -1,6 +1,6 @@
 import * as coin from './classes/coin.js';
 import * as gameControl from './classes/game_control.js';
-import * as animations from './classes/animation.js';
+import { startMainAnimation, failClickAnimation } from './classes/animation.js';
 
 // container and boxes
 const mainContainer = document.getElementById(`container`);
@@ -9,13 +9,13 @@ const lifeContainer = document.getElementById(`lifeContainer`);
 const timeBoard = document.getElementById('time');
 
 // color selection
-const colors = {
-  1:`green`,
-  2:`blue`,
-  3:`yellow`,
-  4:`orange`,
-  5:`pink`,
-  6:`purple`
+export const colors = {
+  1:`rgb(24, 219, 27)`, // green
+  2:`rgb(12, 73, 242)`, // blue
+  3:`rgb(242, 211, 12)`, // yellow
+  4:`rgb(242, 89, 12)`, // orange
+  5:`rgb(67, 8, 168)`, // purple
+  6:`rgb(0, 151, 167)` // teal
 }
 
 // to support keyboard inputs
@@ -32,7 +32,7 @@ const time = {
 }
 
 // important stats
-const stats = {
+export const stats = {
   playerLife : 3,
   level : 1,
   gamespeed : 2000
@@ -58,7 +58,10 @@ function keyboardInputs(event){
     const coinInBox = BoxtoKeyMaps[event.key.toLowerCase()].querySelector('#coin');
     const coinDisplayProperty = window.getComputedStyle(coinInBox).getPropertyValue('display');
 
-    if(coinDisplayProperty === 'none') stats.playerLife -= 1;
+    if(coinDisplayProperty === 'none'){
+      stats.playerLife -= 1;
+      failClickAnimation();
+    }
     else {
       coinInBox.style.display = 'none';
       gameControl.updateScoreBoard(stats, gameControl.getShadowColor(coinInBox)); // update score board
@@ -75,6 +78,9 @@ function keyboardInputs(event){
 function startGameLoop(event){
   gameloop(event);
 }
+
+// animation call
+startMainAnimation(stats, colors, time);
 
 // main gameloop
 function gameloop(event){
@@ -102,7 +108,10 @@ function gameloop(event){
         if(coin.style.display === 'flex'){
           coin.style.display = 'none';
           gameControl.updateScoreBoard(stats, gameControl.getShadowColor(coin)); // update score board
-        } else stats.playerLife -= 1;
+        } else{
+          stats.playerLife -= 1;
+          failClickAnimation();
+        }
         
         gameControl.updateLifeDisplay(lifeContainer, stats); // update life display
 
@@ -119,6 +128,24 @@ function gameloop(event){
     intervalID1 = setInterval(() => {
       gameControl.updateTime(stats, timeBoard, time);
       gameControl.updateGameSpeed(stats, minGamespeed);
+
+      console.log(`level: ${stats.level}\ngamespeed: ${stats.gamespeed}`);
+
+      if(time.seconds == 29 || time.seconds == 59){
+        clearInterval(intervalID2);
+        setTimeout(() => {
+          intervalID2 = setInterval(() => {
+            let coinCount;
+      
+            if(stats.level === 1) coinCount = 1;
+            else if(stats.level === 2 || stats.level === 4) coinCount = 2;
+            else if(stats.level === 3 || stats.level === 5) coinCount = 3;
+            else coinCount = Math.floor(Math.random() * 3 + 1);
+      
+            coin.randomPopUp(coinCount, colors, boxes, stats, lifeContainer);
+          }, stats.gamespeed);
+        }, 1500);
+      }
     },1000);
     
 

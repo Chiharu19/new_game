@@ -11,7 +11,7 @@ export function randomPopUp(coinCount, colors, boxes, stats, lifeContainer){
       const displayProperty = window.getComputedStyle(coin).display;
       
       if(displayProperty != 'flex'){
-        coin.style.boxShadow = `inset 0px 0px 25px 5px ${trapOrNot(colors, stats.level)}`;
+        coin.style.boxShadow = `inset 0px 0px 15px 5px ${trapOrNot(colors, stats.level)}`;
         coin.style.display = `flex`;
 
         setTimeout(() => {
@@ -35,8 +35,8 @@ export function randomPopUp(coinCount, colors, boxes, stats, lifeContainer){
 }
 
 function trapOrNot(colors, level){
-  if(Math.floor(Math.random() * 2)) return 'red';
+  if(Math.floor(Math.random() * 3)) return colors[level];
   else {
-    return colors[level];
+    return 'red';
   }
 }
