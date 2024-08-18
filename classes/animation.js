@@ -49,7 +49,7 @@ const progressBar = document.querySelector('.progressBar');
 const pageEffectInterval = setInterval(() => {
   const percent = (count / maxCount) * 100;
   progressBar.style.width = `${percent}%`;
-  if(percent === 10){
+  if(percent === 100){
     loadingPage.style.opacity = '0';
     setTimeout(() => {
       loadingPage.style.display = 'none';
