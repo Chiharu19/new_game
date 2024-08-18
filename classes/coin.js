@@ -1,5 +1,8 @@
 import { updateLifeDisplay, getShadowColor } from "./game_control.js";
 import { endGameLoop } from "../code.js";
+import { failClickAnimation } from "./animation.js";
+
+let timeoutId;
 
 // makes coins appear at random boxes
 export function randomPopUp(coinCount, colors, boxes, stats, lifeContainer){
@@ -14,14 +17,18 @@ export function randomPopUp(coinCount, colors, boxes, stats, lifeContainer){
         coin.style.boxShadow = `inset 0px 0px 15px 5px ${trapOrNot(colors, stats.level)}`;
         coin.style.display = `flex`;
 
-        setTimeout(() => {
+        // ACTIVATES WHEN COIN LEFT NOT CLICKED
+        timeoutId = setTimeout(() => {
           const boxShadowColor = getShadowColor(coin);
 
-          if(!(boxShadowColor === 'red') && coin.style.display === 'flex' && false) stats.playerLife -= 1;
+          if(!(boxShadowColor === 'red') && coin.style.display === 'flex' && true) {
+            stats.playerLife -= 1;
+            if(stats.playerLife > -1) failClickAnimation();
+          }
           updateLifeDisplay(lifeContainer, stats);
 
           coin.style.display = `none`;
-
+          
           if(stats.playerLife <= 0){ // end gameloop if life === 0
             endGameLoop();
           }
@@ -35,8 +42,10 @@ export function randomPopUp(coinCount, colors, boxes, stats, lifeContainer){
 }
 
 function trapOrNot(colors, level){
-  if(Math.floor(Math.random() * 3)) return colors[level];
+  if(Math.floor(Math.random() * 4)) return colors[level];
   else {
     return 'red';
   }
 }
+
+export {timeoutId};

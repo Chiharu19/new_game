@@ -1,5 +1,6 @@
 *{
   margin: 0;
+  pointer-events: none;
 }
 
 html, body{
@@ -29,7 +30,7 @@ body{
   position: relative;
   border: 3px solid rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(1px);
-  transition: border 0.5s;
+  transition: border 0.2s;
 }
 
 #box{
@@ -37,7 +38,7 @@ body{
   cursor: pointer;
   border: 3px solid rgba(255, 255, 255, 0.900);
   background-color: #0B0B0C;
-  transition: border 0.5s;
+  transition: border 0.2s;
 }
 
 #coin{
@@ -56,6 +57,7 @@ body{
   top: 13px;
   left: 10px;
   font-size: 50px;
+  transition: color 0.2s;
 }
 
 #lifeContainer{
@@ -74,7 +76,7 @@ body{
   background-position: center;
 }
 
-p{
+p, li{
   color: rgba(255, 255, 255, 0.9);
   font-family: "Lucida Console", monospace;
   text-align: center;
@@ -98,6 +100,26 @@ p{
     height: 50px;
     width: 50px;
   }
+
+  .loadingIcon{
+    height: 80px;
+    width: 80px;
+  }
+
+  .gameTitle{
+    font-size: 3em;
+  }
+
+  .startBtn{
+    height: 80px;
+    width: 200px;
+  }
+
+  .instructions{
+    height: 5%;
+    bottom: -1%;
+    right: -2.5%;
+  }
 }
 
 /* TABLET PORTRAIT */
@@ -116,6 +138,26 @@ p{
   .faller{
     height: 50px;
     width: 50px;
+  }
+
+  .loadingIcon{
+    height: 85px;
+    width: 85px;
+  }
+
+  .gameTitle{
+    font-size: 4.3em;
+  }
+
+  .startBtn{
+    height: 100px;
+    width: 240px;
+  }
+
+  .instructions{
+    height: 7%;
+    bottom: -2.8%;
+    right: -2.8%;
   }
 }
 
@@ -136,10 +178,30 @@ p{
     height: 70px;
     width: 70px;
   }
+
+  .loadingIcon{
+    height: 100px;
+    width: 100px;
+  }
+
+  .gameTitle{
+    font-size: 5em;
+  }
+
+  .startBtn{
+    height: 100px;
+    width: 250px;
+  }
+
+  .instructions{
+    height: 7%;
+    right: -2.8%;
+    bottom: -2%;
+  }
 }
 
 /* DESKTOP */
-@media screen and (min-width: 1024px) {
+@media all and (min-width: 1024px) {
   #container{
     height: 400px;
     width: 650px;
@@ -154,5 +216,25 @@ p{
   .faller{
     height: 70px;
     width: 70px;
+  }
+
+  .loadingIcon{
+    height: 100px;
+    width: 100px;
+  }
+
+  .gameTitle{
+    font-size: 6.5em;
+  }
+
+  .startBtn{
+    height: 150px;
+    width: 350px;
+  }
+
+  .instructions{
+    height: 10%;
+    bottom: -2.5%;
+    right: -1.5%;
   }
 }

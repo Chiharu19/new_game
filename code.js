@@ -1,6 +1,6 @@
-import * as coin from './classes/coin.js';
+import {randomPopUp, timeoutId} from './classes/coin.js';
 import * as gameControl from './classes/game_control.js';
-import { startMainAnimation, failClickAnimation } from './classes/animation.js';
+import { startMainAnimation, failClickAnimation, endGameAnimation} from './classes/animation.js';
 
 // container and boxes
 const mainContainer = document.getElementById(`container`);
@@ -26,9 +26,11 @@ for(let k = 0; k < 6; k++){
 }
 
 // time
-const time = {
+export const time = {
   minutes : 0,
-  seconds : 0
+  seconds : 0,
+  highestMinutes : 0,
+  highestSeconds : 0
 }
 
 // important stats
@@ -49,8 +51,9 @@ let coinClickHandlers = [];
 // checks if the DOM content is loaded before executing gameloop
 let contentLoaded = false;
 
+const startBtn = document.querySelector('.startBtn');
 // starts the game loop
-document.addEventListener('keydown', startGameLoop);
+startBtn.addEventListener('click', startGameLoop);
 
 // keyboard input event
 function keyboardInputs(event){
@@ -75,37 +78,43 @@ function keyboardInputs(event){
   } else console.log('invalid key');
 }
 
-function startGameLoop(event){
-  gameloop(event);
+// checks for window resizes
+gameControl.adjustElementsSizes(mainContainer);
+window.addEventListener(`resize`, () => {
+  gameControl.adjustElementsSizes(mainContainer);
+});
+
+function startGameLoop(){
+  startBtn.removeEventListener('click', startGameLoop);
+  setTimeout(() => gameloop(), 1000);
 }
 
 // animation call
-startMainAnimation(stats, colors, time);
+startMainAnimation(colors, time);
 
 // main gameloop
-function gameloop(event){
-  if(event.key === " " && contentLoaded){
+function gameloop(){
+  if(contentLoaded){
     console.log('game started');
 
-    // remove gameloop starter
-    document.removeEventListener('keydown', startGameLoop);
+    // makes the game playable
+    setTimeout(() => {
+      document.addEventListener('keydown', keyboardInputs);
+      for(let box of boxes){
+        box.style.pointerEvents = 'all';
+      }
+    }, 1200);
 
-    document.addEventListener('keydown', keyboardInputs);
-
-    // checks for window resizes
-    gameControl.adjustElementsSizes(mainContainer);
-    window.addEventListener(`resize`, () => {
-      gameControl.adjustElementsSizes(mainContainer);
-    });
-
-    gameControl.updateLifeDisplay(lifeContainer, stats); // initial life display
+    // initial life display
+    gameControl.updateLifeDisplay(lifeContainer, stats); 
 
     // adds click event to the boxes
     for(let box of boxes){
       const clickHandler = () => {
         const coin = box.querySelector('#coin');
+        const coinStyle = window.getComputedStyle(coin).display;
 
-        if(coin.style.display === 'flex'){
+        if(coinStyle === 'flex'){
           coin.style.display = 'none';
           gameControl.updateScoreBoard(stats, gameControl.getShadowColor(coin)); // update score board
         } else{
@@ -124,14 +133,15 @@ function gameloop(event){
       coinClickHandlers.push({box, clickHandler});
     }
 
-    // handles timer
+    // handles timer & continuous pop of coins
     intervalID1 = setInterval(() => {
       gameControl.updateTime(stats, timeBoard, time);
       gameControl.updateGameSpeed(stats, minGamespeed);
 
-      console.log(`level: ${stats.level}\ngamespeed: ${stats.gamespeed}`);
+      console.log(`level: ${stats.level}\ngamespeed: ${stats.gamespeed}\nlife: ${stats.playerLife}`);
 
-      if(time.seconds == 29 || time.seconds == 59){
+      if(((time.seconds == 29 || time.seconds == 59) && time.minutes < 2) || (time.minutes == 2 && time.seconds == 29)){
+        console.log('PAUSING COIN POP UP')
         clearInterval(intervalID2);
         setTimeout(() => {
           intervalID2 = setInterval(() => {
@@ -142,58 +152,80 @@ function gameloop(event){
             else if(stats.level === 3 || stats.level === 5) coinCount = 3;
             else coinCount = Math.floor(Math.random() * 3 + 1);
       
-            coin.randomPopUp(coinCount, colors, boxes, stats, lifeContainer);
+            randomPopUp(coinCount, colors, boxes, stats, lifeContainer);
           }, stats.gamespeed);
         }, 1500);
       }
-    },1000);
+    }, 1000);
     
+    // initial pop up of coins
+    setTimeout(() => {
+      // handles coins popping up
+      intervalID2 = setInterval(() => {
+        let coinCount;
 
-    // handles coins popping up
-    intervalID2 = setInterval(() => {
-      let coinCount;
+        if(stats.level === 1) coinCount = 1;
+        else if(stats.level === 2 || stats.level === 4) coinCount = 2;
+        else if(stats.level === 3 || stats.level === 5) coinCount = 3;
+        else coinCount = Math.floor(Math.random() * 3 + 1);
 
-      if(stats.level === 1) coinCount = 1;
-      else if(stats.level === 2 || stats.level === 4) coinCount = 2;
-      else if(stats.level === 3 || stats.level === 5) coinCount = 3;
-      else coinCount = Math.floor(Math.random() * 3 + 1);
-
-      coin.randomPopUp(coinCount, colors, boxes, stats, lifeContainer);
-    }, stats.gamespeed);
-  
+        randomPopUp(coinCount, colors, boxes, stats, lifeContainer);
+      }, stats.gamespeed);
+    }, 300);
   }
 }
 
 // ending game loop
 export function endGameLoop(){
   console.log('ending game');
-  clearInterval(intervalID1);
-  clearInterval(intervalID2);
 
-  for(let {box, clickHandler} of coinClickHandlers){
-    try{removeEventListener('click', clickHandler);}
+  // clearing the timeout on the coin
+  clearTimeout(timeoutId);
+
+  // storing highscores
+  time.highestMinutes = Math.max(time.highestMinutes, time.minutes);
+  time.highestSeconds = Math.max(time.highestSeconds, time.seconds);
+
+  clearInterval(intervalID1); // timer interval
+  clearInterval(intervalID2); // coin pop up interval
+
+  // removing event listeners to the boxes
+  for(let {box, clickHandler} of coinClickHandlers){ 
+    try{box.removeEventListener('click', clickHandler);}
     catch(error){console.log(error + `: cannot remove coin event`)};
   }
 
-  document.removeEventListener('keydown', keyboardInputs);
+  coinClickHandlers = [];
 
-  time.minutes = 0;
-  time.seconds = 0;
+  // delayed reset to initials
+  setTimeout(() => {
+    // reseting stats back to initial
+    stats.gamespeed = 2000;
+    stats.playerLife = 3;
+    stats.level = 1;  
 
-  stats.gamespeed = 2000;
-  stats.playerLife = 0;
-  stats.level = 1;
+    time.minutes = 0;
+    time.seconds = 0;
 
+    for(let box1 of boxes){
+      const box = box1.querySelector('#coin');
+      box.style.display = 'none';
+    }
+  }, 400)
+  
+  document.removeEventListener('keydown', keyboardInputs); // keyboard input listeners
+
+  // removing of intervals and timeouts
   intervalID1 = null;
   intervalID2 = null;
 
-  coinClickHandlers = [];
-
-  contentLoaded = false;
+  // animating outro
+  endGameAnimation(time.highestMinutes, time.highestSeconds, time.minutes, time.seconds);
+  // add start btn game starter again
+  startBtn.addEventListener('click', startGameLoop);
 }
 
 document.addEventListener(`DOMContentLoaded`, () => {
   contentLoaded = true
   console.log(`dom, loaded`);
-  console.log('waiting space bar');
-});
+}); 

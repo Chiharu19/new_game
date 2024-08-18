@@ -1,5 +1,7 @@
 import { failClickAnimation } from "./animation.js";
 
+let tempTime;
+
 const newLevel = (minutes, seconds) => {
   let level;
 
@@ -13,18 +15,25 @@ const newLevel = (minutes, seconds) => {
   return level;
 }
 
-const formatTime = function(unit) {
-  return unit < 10 ? '0' + unit : unit;
+const formatTime = function(unit, inMinutes) {
+  if(inMinutes) return unit;
+  else return unit < 10 ? '0' + unit : unit;
 };
 
 // updates the time in game
 export function updateTime(stats, timeBoard, time){
-  if(time.seconds === 60) {
+  if(time.seconds === 59) {
     time.minutes += 1;
     time.seconds = 0;
   } else time.seconds += 1;
 
-  timeBoard.innerHTML = `${time.minutes}:${formatTime(time.seconds)}`;
+  if(time.minutes < 1){
+    tempTime = `${time.seconds}`;
+  } else{
+    tempTime = `${time.minutes}:${formatTime(time.seconds, false)}`;
+  }
+
+  timeBoard.innerHTML = tempTime;
 
   stats.level = newLevel(time.minutes, time.seconds);
 }
@@ -109,9 +118,9 @@ export function updateGameSpeed(stats, minGamespeed){
   if(stats.level === 6) stats.gamespeed = minGamespeed;
   else if(stats.level < 2) stats.gamespeed = 2000;
   else if(stats.level < 3) stats.gamespeed = 1500;
-  else if(stats.level < 4) stats.gamespeed = 1000;
-  else if(stats.level < 5) stats.gamespeed = 800;
-  else stats.gamespeed = 600;
+  else if(stats.level < 4) stats.gamespeed = 1100;
+  else if(stats.level < 5) stats.gamespeed = 900;
+  else stats.gamespeed = 700;
 }
 
 export function getShadowColor(object) {

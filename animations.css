@@ -14,7 +14,24 @@
   border: 3px solid rgb(24, 219, 27);
   translate: -50% -50%;
   opacity: 1;
-  transition: all 0.5s;
+  transition: all 1.5s;
+}
+
+@keyframes meteor-fall{
+  0%{
+    top: 0%;
+    transform: rotate(0deg);
+  }
+  50%{
+    top: 50%;
+    transform: rotate(360deg);
+
+  }
+  100%{
+    top: 100%;
+    transform: rotate(720deg);
+
+  }
 }
 
 .whiteout{
@@ -39,19 +56,230 @@
   background: none;
 }
 
-@keyframes meteor-fall{
-  0%{
-    top: 0%;
-    transform: rotate(0deg);
-  }
-  50%{
-    top: 50%;
-    transform: rotate(360deg);
+.loadingPage{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100%;
+  width: 100%;
+  background-color: #0B0B0C;
+  z-index: 6;
+  pointer-events: all;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 1s;
+}
 
+.loadingIcon{
+  transform: rotate(45deg);
+  border: 3px solid white;
+  transform-style: preserve-3d;
+  animation: spin 2s linear infinite;
+}
+
+@property --angle{
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.progressBar{
+  position: absolute;
+  left: 0%;
+  bottom: 0%;
+  height: 1%;
+  width: 0%;
+  background-color: azure;
+}
+
+
+.progressBar::before, .progressBar::after{
+  content: '';
+  position: absolute;
+  z-index: -1;
+  right: 0px;
+  top: -500%;
+  translate: -50%, -50%;
+  height: 15px;
+  width: 15px;
+  border: 2px solid white;
+  animation: otherSpin 3s linear infinite;
+}
+
+@keyframes otherSpin {
+  0%{
+    transform: rotate(0deg);
+    border: 2px solid rgb(24, 219, 27);
+  } 
+  25%{
+    transform: rotate(72deg);
+    border: 2px solid rgb(12, 73, 242);
+  } 
+  50%{
+    transform: rotate(144deg);
+    border: 2px solid rgb(242, 211, 12);
+  }
+  75%{
+    transform: rotate(216deg);
+    border: 2px solid rgb(242, 89, 12);
   }
   100%{
-    top: 100%;
-    transform: rotate(720deg);
+    transform: rotate(360deg);
+    border: 2px solid rgb(0, 151, 167);
+  }
+}
 
+@keyframes spin {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+.intro{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100%;
+  width: 100%;
+  background-color: #0B0B0C;
+  z-index: 5;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transition: all 0.2s;
+}
+
+.gameTitle{
+  margin-bottom: 100px;
+}
+
+.startBtn{
+  pointer-events: all;
+  border-radius: 20px;
+  cursor: pointer;
+  background-color: #0B0B0C;
+  border: 3px solid white;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.startBtn:hover {
+  background-color: white;
+}
+
+.startBtn:hover p{
+  color: #0B0B0C;
+}
+
+.startBtn>p{
+  font-size: 200%;
+  transition: all 0.15s;
+}
+
+.endingPage{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 101%;
+  width: 100%;
+  background-color: #0B0B0C;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  transition: all 1.5s;
+  flex-direction: column;
+}
+
+.endingPage p{
+  color: white;
+}
+
+.homeBtn{
+  pointer-events: none;
+  border-radius: 20px;
+  cursor: pointer;
+  background-color: #0B0B0C;
+  border: 3px solid white;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.homeBtn:hover {
+  background-color: white;
+}
+
+.homeBtn:hover p{
+  color: #0B0B0C;
+}
+
+.homeBtn>p{
+  font-size: 200%;
+  transition: all 0.15s;
+}
+
+
+/* MOBILE PORTRAIT */
+@media screen and (max-width: 480px) {
+  .endingPage p{
+    font-size: 1.3em;
+  }
+
+  .homeBtn{
+    height: 70px;
+    width: 200px;
+  }
+}
+
+/* TABLET PORTRAIT */
+@media screen and (min-width: 480px) and (max-width: 768px) {
+  .endingPage p{
+    font-size: 2em;
+  }
+
+  .homeBtn{
+    height: 90px;
+    width: 250px;
+  }
+}
+
+/* TABLET LANDSCAPE */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .endingPage p{
+    font-size: 2.2em;
+  }
+
+  .homeBtn{
+    height: 90px;
+    width: 270px;
+  }
+}
+
+/* DESKTOP */
+@media all and (min-width: 1024px) {
+  .endingPage p{
+    font-size: 2.5em;
+  }
+
+  .homeBtn{
+    height: 100px;
+    width: 300px;
   }
 }
